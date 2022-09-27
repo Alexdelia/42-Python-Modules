@@ -15,7 +15,7 @@ CYA='\033[36m'
 D='\033[0m'
 
 if [ $# -eq 0 ]; then
-    e='whois.py'
+    e='operation.py'
 else
     e=$1
 fi
@@ -48,27 +48,39 @@ function test
 
 echo
 
-test 12 "I'm Even.\n"
-test 3 "I'm Odd.\n"
-test 0 "I'm Zero.\n"
-test 'Hello' '^[[1;31mAssertionError:^[[35m	Hello^[[0m ^[[31mis not an integer^[[0m\n'
-test '12 3' '^[[1;31mAssertionError:^[[35m	2^[[0m ^[[31marguments provided, expected ^[[1;35m1^[[0m\n'
-test '' 'usage:	^[[1m./whois.py ^[[35m<number>^[[0m\n'
-test '          42       ' "I'm Even.\n"
-test '0000000000000000021' "I'm Odd.\n"
-test '0,84' '^[[1;31mAssertionError:^[[35m	0,84^[[0m ^[[31mis not an integer^[[0m\n'
-test '0.84' '^[[1;31mAssertionError:^[[35m	0.84^[[0m ^[[31mis not an integer^[[0m\n'
-test 's42' '^[[1;31mAssertionError:^[[35m	s42^[[0m ^[[31mis not an integer^[[0m\n'
-test '42s' '^[[1;31mAssertionError:^[[35m	42s^[[0m ^[[31mis not an integer^[[0m\n'
-test '+42' "I'm Even.\n"
-test '-42' "I'm Even.\n"
-test '+21' "I'm Odd.\n"
-test '-21' "I'm Odd.\n"
-test '+0' "I'm Zero.\n"
-test '-0' "I'm Zero.\n"
-test '+-+42' '^[[1;31mAssertionError:^[[35m	+-+42^[[0m ^[[31mis not an integer^[[0m\n'
-test '++42' '^[[1;31mAssertionError:^[[35m	++42^[[0m ^[[31mis not an integer^[[0m\n'
-test '--42' '^[[1;31mAssertionError:^[[35m	--42^[[0m ^[[31mis not an integer^[[0m\n'
+test '10 3' \
+'^[[1mSum:^[[0m		^[[1;35m13^[[0m
+^[[1mDifference:^[[0m	^[[1;35m7^[[0m
+^[[1mProduct:^[[0m	^[[1;35m30^[[0m
+^[[1mQuotient:^[[0m	^[[1;35m3.3333333333333335^[[0m
+^[[1mRemainder:^[[0m	^[[1;35m1^[[0m
+'
+test '42 10' \
+'^[[1mSum:^[[0m		^[[1;35m52^[[0m
+^[[1mDifference:^[[0m	^[[1;35m32^[[0m
+^[[1mProduct:^[[0m	^[[1;35m420^[[0m
+^[[1mQuotient:^[[0m	^[[1;35m4.2^[[0m
+^[[1mRemainder:^[[0m	^[[1;35m2^[[0m
+'
+test '1 0' \
+'^[[1mSum:^[[0m		^[[1;35m1^[[0m
+^[[1mDifference:^[[0m	^[[1;35m1^[[0m
+^[[1mProduct:^[[0m	^[[1;35m0^[[0m
+^[[1mQuotient:^[[0m	^[[1;31mERROR^[[0m	^[[31m(division by zero)^[[0m
+^[[1mRemainder:^[[0m	^[[1;31mERROR^[[0m	^[[31m(modulo by zero)^[[0m
+'
+test '' 'usage:	^[[1moperation.py ^[[35m<number1> <number2>^[[0m\n'
+test '12 10 5' '^[[1;31mAssertionError:^[[35m	3^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
+test '42' '^[[1;31mAssertionError:^[[35m	1^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
+test 'one two' '^[[1;31mAssertionError:^[[35m	one^[[0m ^[[31mis not an integer^[[0m\n'
+test '42 two' '^[[1;31mAssertionError:^[[35m	two^[[0m ^[[31mis not an integer^[[0m\n'
+test '-42 10' \
+'^[[1mSum:^[[0m		^[[1;35m-32^[[0m
+^[[1mDifference:^[[0m	^[[1;35m-52^[[0m
+^[[1mProduct:^[[0m	^[[1;35m-420^[[0m
+^[[1mQuotient:^[[0m	^[[1;35m-4.2^[[0m
+^[[1mRemainder:^[[0m	^[[1;35m8^[[0m
+'
 
 #test 'failing' 'failing\n'
 

@@ -10,7 +10,7 @@ if len(sys.argv) == 1:
     sys.exit()
 elif len(sys.argv) != 3:
     print(
-        f"\033[1;31mAssertionError:\033[35m\t{len(sys.argv) - 1}\033[0m \033[31marguments provided, expected \033[1;35m1\033[0m")
+        f"\033[1;31mAssertionError:\033[35m\t{len(sys.argv) - 1}\033[0m \033[31marguments provided, expected \033[1;35m2\033[0m")
     sys.exit()
 
 try:
