@@ -69,6 +69,13 @@ test '1 0' \
 ^[[1mQuotient:^[[0m	^[[1;31mERROR^[[0m	^[[31m(division by zero)^[[0m
 ^[[1mRemainder:^[[0m	^[[1;31mERROR^[[0m	^[[31m(modulo by zero)^[[0m
 '
+test '0 1' \
+'^[[1mSum:^[[0m		^[[1;35m1^[[0m
+^[[1mDifference:^[[0m	^[[1;35m-1^[[0m
+^[[1mProduct:^[[0m	^[[1;35m0^[[0m
+^[[1mQuotient:^[[0m	^[[1;35m0.0^[[0m
+^[[1mRemainder:^[[0m	^[[1;35m0^[[0m
+'
 test '' 'usage:	^[[1moperation.py ^[[35m<number1> <number2>^[[0m\n'
 test '12 10 5' '^[[1;31mAssertionError:^[[35m	3^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
 test '42' '^[[1;31mAssertionError:^[[35m	1^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
