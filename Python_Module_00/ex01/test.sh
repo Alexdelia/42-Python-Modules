@@ -15,7 +15,7 @@ CYA='\033[36m'
 D='\033[0m'
 
 if [ $# -eq 0 ]; then
-    e='whois.py'
+    e='exec.py'
 else
     e=$1
 fi
@@ -48,27 +48,17 @@ function test
 
 echo
 
-test 12 "I'm Even.\n"
-test 3 "I'm Odd.\n"
-test 0 "I'm Zero.\n"
-test 'Hello' '^[[1;31mAssertionError:^[[35m	Hello^[[0m ^[[31mis not an integer^[[0m\n'
-test '12 3' '^[[1;31mAssertionError:^[[35m	2^[[0m ^[[31marguments provided, expected ^[[1;35m1^[[0m\n'
-test '' 'usage:	^[[1m./whois.py ^[[35m<number>^[[0m\n'
-test '          42       ' "I'm Even.\n"
-test '0000000000000000021' "I'm Odd.\n"
-test '0,84' '^[[1;31mAssertionError:^[[35m	0,84^[[0m ^[[31mis not an integer^[[0m\n'
-test '0.84' '^[[1;31mAssertionError:^[[35m	0.84^[[0m ^[[31mis not an integer^[[0m\n'
-test 's42' '^[[1;31mAssertionError:^[[35m	s42^[[0m ^[[31mis not an integer^[[0m\n'
-test '42s' '^[[1;31mAssertionError:^[[35m	42s^[[0m ^[[31mis not an integer^[[0m\n'
-test '+42' "I'm Even.\n"
-test '-42' "I'm Even.\n"
-test '+21' "I'm Odd.\n"
-test '-21' "I'm Odd.\n"
-test '+0' "I'm Zero.\n"
-test '-0' "I'm Zero.\n"
-test '+-+42' '^[[1;31mAssertionError:^[[35m	+-+42^[[0m ^[[31mis not an integer^[[0m\n'
-test '++42' '^[[1;31mAssertionError:^[[35m	++42^[[0m ^[[31mis not an integer^[[0m\n'
-test '--42' '^[[1;31mAssertionError:^[[35m	--42^[[0m ^[[31mis not an integer^[[0m\n'
+test 'Hello World!' '!DLROw OLLEh\n'
+test 'Hello my Friend' 'DNEIRf YM OLLEh\n'
+test '' ''
+test 'basic' 'CISAB\n'
+test 'BASIC' 'cisab\n'
+test 'CISAB' 'basic\n'
+test 'cisab' 'BASIC\n'
+test '0123456789' '9876543210\n'
+test ' a1  a2    a3      ' '3A 2A 1A\n'
+test ' !\()*+,-./:;' ';:/.-,+*)(\!\n'
+test '<=>?@^_`{|}~/' '/~}|{`_^@?>=<\n'
 
 #test 'failing' 'failing\n'
 
