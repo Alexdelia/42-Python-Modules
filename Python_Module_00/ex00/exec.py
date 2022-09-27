@@ -1,5 +1,1 @@
-# some comments
-
-# some more comments
-
-# some more comments
+#!/usr/bin/env python3
