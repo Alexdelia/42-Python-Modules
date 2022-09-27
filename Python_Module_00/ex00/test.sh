@@ -57,8 +57,8 @@ test 'CISAB' 'basic\n'
 test 'cisab' 'BASIC\n'
 test '0123456789' '9876543210\n'
 test ' a1  a2    a3      ' '3A 2A 1A\n'
-test ' !\()*+,-./:;' ';:/.-,+*)(\!$'
-test '<=>?@^_`{|}~/' '/~}|{`_^@?>=<$'
+test ' !\()*+,-./:;' ';:/.-,+*)(\!\n'
+test '<=>?@^_`{|}~/' '/~}|{`_^@?>=<\n'
 
 #test 'failing' 'failing\n'
 
