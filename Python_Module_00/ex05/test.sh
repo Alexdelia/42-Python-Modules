@@ -47,8 +47,10 @@ function test
 {
     printf "$B${CYA}$1$D\n"
     
+    [ ! -f $1 ] && printf "$B[${RED}✗$D$B]$D\t${RED}File $B$MAG$1$D$RED not found$D\n" && ((b=b+1)) && return
+    
     you=$(python $1 $2 | cat -e)
-    me=$(printf "$3" | cat -e)
+    me=$(printf -- "$3" | cat -e)
     
     test_res "$2" "$you" "$me"
 }
@@ -56,6 +58,8 @@ function test
 function test_wc
 {
     printf "$B${CYA}$1 wc$D\n"
+    
+    [ ! -f $1 ] && printf "$B[${RED}✗$D$B]$D\t${RED}File $B$MAG$1$D$RED not found$D\n" && ((b=b+1)) && return
     
     you=$(python $1 $2 | wc -c)
     me=$3
@@ -73,6 +77,9 @@ PHP was created by Rasmus Lerdorf
 '
 test "${e}/kata02.py" '' '09/25/2019 03:30\n'
 test_wc "${e}/kata02.py" '' '17'
+test "${e}/kata03.py" '' '--------------------------The right format'
+test_wc "${e}/kata03.py" '' '42'
+test "${e}/kata04.py" '' '42 - The meaning of life, the universe and everything'
 
 
 #test 'failing' 'failing\n'
