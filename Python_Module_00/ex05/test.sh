@@ -10,6 +10,7 @@ I='\033[3m'
 RED='\033[31m'
 GRE='\033[32m'
 YEL='\033[33m'
+BLU='\033[34m'
 MAG='\033[35m'
 CYA='\033[36m'
 D='\033[0m'
@@ -67,6 +68,18 @@ function test_wc
     test_res "$2" "$you" "$me"
 }
 
+function test_custom
+{
+    printf "$B${CYA}$1$D $I$BLU$2$D\n"
+    
+    [ ! -f $1 ] && printf "$B[${RED}✗$D$B]$D\t${RED}File $B$MAG$1$D$RED not found$D\n" && ((b=b+1)) && return
+    
+    you=$3
+    me=$4
+    
+    test_res '' "$you" "$me"
+}
+
 echo
 
 test "${e}/kata00.py" '' 'The 3 numbers are: 19, 42, 21\n'
@@ -79,7 +92,11 @@ test "${e}/kata02.py" '' '09/25/2019 03:30\n'
 test_wc "${e}/kata02.py" '' '17'
 test "${e}/kata03.py" '' '--------------------------The right format'
 test_wc "${e}/kata03.py" '' '42'
-test "${e}/kata04.py" '' '42 - The meaning of life, the universe and everything'
+test "${e}/kata04.py" '' 'module_00, ex_04 : 132.42, 1.00e+04, 1.23e+04\n'
+test_custom "${e}/kata04.py" \
+"python3 ${e}/kata04.py | cut -c 10,18" \
+`python3 ${e}/kata04.py | cut -c 10,18` \
+',:'
 
 
 #test 'failing' 'failing\n'
