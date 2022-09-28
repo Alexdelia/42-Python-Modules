@@ -56,6 +56,7 @@ test "${e}/kata01.py" '' \
 Ruby was created by Yukihiro Matsumoto
 PHP was created by Rasmus Lerdorf
 '
+test "${e}/kata02.py" '' '09/25/2019 03:30\n'
 
 #test 'failing' 'failing\n'
 
