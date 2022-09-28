@@ -22,6 +22,27 @@ fi
 
 #[ ! -f $e ] && printf "File $B$MAG$e$D not found\n" && exit 1
 
+function test_res
+{
+    _size=${#1}
+    (( _size = _size - 20 ))
+    printf "$I\"$D$B$MAG${1}$D$I\"%*s-> \"$D$B$MAG${2}$D$I\"$D" "$_size"
+    
+    _size=$C
+    (( _size = _size - (${#2} + 42) ))
+    printf "%${_size}s" ""
+    
+    if diff <(echo $3) <(echo $2) > /dev/null ; then
+        printf "$B[${GRE}✔$D$B]$D\n"
+        ((g=g+1))
+    else
+        printf "$B[${RED}✗$D$B]$D\n"
+        printf "you:      $2\n"
+        printf "expected: $3\n\n"
+        ((b=b+1))
+    fi
+}
+
 function test
 {
     printf "$B${CYA}$1$D\n"
@@ -29,23 +50,17 @@ function test
     you=$(python $1 $2 | cat -e)
     me=$(printf "$3" | cat -e)
     
-    _size=${#2}
-    (( _size = _size - 20 ))
-    printf "$I\"$D$B$MAG${2}$D$I\"%*s-> \"$D$B$MAG${you}$D$I\"$D" "$_size"
+    test_res "$2" "$you" "$me"
+}
+
+function test_wc
+{
+    printf "$B${CYA}$1 wc$D\n"
     
-    _size=$C
-    (( _size = _size - (${#you} + 42) ))
-    printf "%${_size}s" ""
+    you=$(python $1 $2 | wc -c)
+    me=$3
     
-    if diff <(echo $me) <(echo $you) > /dev/null ; then
-        printf "$B[${GRE}✔$D$B]$D\n"
-        ((g=g+1))
-    else
-        printf "$B[${RED}✗$D$B]$D\n"
-        printf "you:      $you\n"
-        printf "expected: $me\n\n"
-        ((b=b+1))
-    fi
+    test_res "$2" "$you" "$me"
 }
 
 echo
@@ -57,6 +72,8 @@ Ruby was created by Yukihiro Matsumoto
 PHP was created by Rasmus Lerdorf
 '
 test "${e}/kata02.py" '' '09/25/2019 03:30\n'
+test_wc "${e}/kata02.py" '' '17'
+
 
 #test 'failing' 'failing\n'
 
