@@ -45,7 +45,7 @@ function test_res
 
 function test
 {
-    you=$(echo "$3" | python $e "$1" | cat -e)
+    you=$(echo "$3" | python3 $e "$1" | cat -e)
     me=$(printf "$2" | cat -e)
     
     [ $# -eq 3 ] && printf "${I}piping: \"$D$B$CYA$3$D$I\"\n"
@@ -114,6 +114,52 @@ print(text_analyzer.__doc__)" \
 '\t
 	This function counts the number of upper characters, lower characters,
 	punctuation and spaces in a given text.
+\n\t'
+
+#test 'failing' 'failing\n'
+
+
+printf "\n\t[ $B$GRE${g}$D|$B$RED${b}$D / $B$(($g + $b))$D]"
+([ $b -eq 0 ] && printf "$B$GRE") || ([ $g -eq 0 ] && printf "$B$RED") || printf "$B$YEL"
+p=$(echo "$g * 100 / ($g + $b)" | bc)
+printf "\t$B${p}%%$D\t$B["
+[ $b -eq 0 ] && printf "${GRE}OK" || printf "${RED}KO"
+printf "$D$B]$D\n"
+- 1 upper letter(s)
+- 9 lower letter(s)
+- 1 punctuation mark(s)
+- 1 space(s)
+' \
+'Hello world!'
+
+printf "\n$B$CYA\tcli test:$D\n"
+
+cli_test "from count import text_analyzer
+text_analyzer(\"Python 2.0, released 2000, introduced features like List comprehensions and a garbage collection system capable of collecting reference cycles.\")" \
+'The text contains 143 character(s):
+- 2 upper letter(s)
+- 113 lower letter(s)
+- 4 punctuation mark(s)
+- 18 space(s)
+'
+cli_test "from count import text_analyzer
+text_analyzer(\"Python is an interpreted, high-level, general-purpose programming language. Created by Guido van Rossum and first released in 1991, Python's design philosophy emphasizes code readability with its notable use of significant whitespace.\")" \
+'The text contains 234 character(s):
+- 5 upper letter(s)
+- 187 lower letter(s)
+- 8 punctuation mark(s)
+- 30 space(s)
+'
+
+cli_test "from count import text_analyzer
+text_analyzer(42)" \
+'^[[1;31mAssertionError:^[[35m	42^[[0m ^[[31mis not a string^[[0m\n'
+
+cli_test "from count import text_analyzer
+print(text_analyzer.__doc__)" \
+'\t
+This function counts the number of upper characters, lower characters,
+punctuation and spaces in a given text.
 \n\t'
 
 #test 'failing' 'failing\n'

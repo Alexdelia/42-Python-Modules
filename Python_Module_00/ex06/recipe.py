@@ -27,7 +27,7 @@ def print_recipe(name: str):
     print(f"Recipe for {name}:")
     print(f"\tIngredients list: {cookbook[name]['ingredients']}")
     print(f"\tTo be eaten for {cookbook[name]['meal']}.")
-    print(f"\tTakes {cookbook[name]['prep_time']} minutes of cooking.\n")
+    print(f"\tTakes {cookbook[name]['prep_time']} minutes of cooking.")
 
 
 def delete_recipe(name: str):
@@ -49,22 +49,22 @@ def add_recipe(name: str, ingredients: 'list[str]', meal: str, prep_time: int):
 
 def add_recipe_interactive():
     """add a recipe interactively"""
-    name = input("Recipe name\n>> ")
+    name = input("Enter a name:\n")
     while name in cookbook:
         print("Recipe already exists")
-        name = input("Recipe name:\n>> ")
+        name = input("Enter a name:\n")
     # ingredients = sys.stdin.readlines()
     ingredients: 'list[str]' = []
-    i = input("Ingredient:\n>> ")
+    i = input("Enter ingredients:\n")
     while i != "":
         ingredients.append(i)
-        i = input("Ingredient:\n>> ")
-    meal = input("Meal:\n>> ")
+        i = input()
+    meal = input("Enter a meal type:\n")
     prep_time = 0
     b = True
     while b:
         try:
-            prep_time = int(input("Preparation time:\n>> "))
+            prep_time = int(input("Enter a preparation time:\n"))
             b = False
         except ValueError:
             print("Please enter a number")
@@ -84,7 +84,7 @@ def print_menu():
     print("\t2: Delete a recipe")
     print("\t3: Print a recipe")
     print("\t4: Print the cookbook")
-    print("\t5: Quit\n")
+    print("\t5: Quit")
 
 
 if __name__ == "__main__":
@@ -94,9 +94,9 @@ if __name__ == "__main__":
     o = 0
     while o != 5:
         try:
-            o = int(input("Please select an option:\n>> "))
+            o = int(input("\nPlease select an option:\n>> "))
         except ValueError:
-            print("Sorry, this option does not exist.")
+            print("\nSorry, this option does not exist.")
             print_menu()
             continue
         print()
@@ -105,7 +105,9 @@ if __name__ == "__main__":
         elif o == 2:
             delete_recipe(input("Recipe name:\n>> "))
         elif o == 3:
-            print_recipe(input("Recipe name:\n>> "))
+            i = input("Recipe name:\n>> ")
+            print()
+            print_recipe(i)
         elif o == 4:
             print_cookbook()
         elif o == 5:

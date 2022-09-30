@@ -50,7 +50,7 @@ function test
     
     [ ! -f $1 ] && printf "$B[${RED}✗$D$B]$D\t${RED}File $B$MAG$1$D$RED not found$D\n" && ((b=b+1)) && return
     
-    you=$(python $1 $2 | cat -e)
+    you=$(python3 $1 $2 | cat -e)
     me=$(printf -- "$3" | cat -e)
     
     test_res "$2" "$you" "$me"
@@ -62,7 +62,7 @@ function test_wc
     
     [ ! -f $1 ] && printf "$B[${RED}✗$D$B]$D\t${RED}File $B$MAG$1$D$RED not found$D\n" && ((b=b+1)) && return
     
-    you=$(python $1 $2 | wc -c)
+    you=$(python3 $1 $2 | wc -c)
     me=$3
     
     test_res "$2" "$you" "$me"

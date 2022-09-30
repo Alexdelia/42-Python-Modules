@@ -24,7 +24,7 @@ fi
 
 function test
 {
-    you=$(python $e $1 | cat -e)
+    you=$(python3 $e $1 | cat -e)
     me=$(printf "$2" | cat -e)
     
     _size=${#1}
