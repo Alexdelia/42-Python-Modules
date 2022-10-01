@@ -1,0 +1,5 @@
+conda list
+conda list numpy && cat ~/goinfre/$USER/miniconda3/envs/42AI-$USER/conda-meta/numpy-1*.json
+conda remove numpy
+conda install numpy
+conda list --export > requirements.txt
