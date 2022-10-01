@@ -21,7 +21,7 @@ def test(name: str, listy: range, f: Callable[[int], int], sleep_time: float = 0
             ret += f(item)
         sleep(sleep_time)
     print("\n>>\033[1;3;32m",
-          [f"{ret}", f"{ret:e}"][ret > 1000000],
+          [f"{ret}", f"{ret:e}"][ret > 100000000],
           end="\033[0m\n\n")
 
 def test_w(name: str, listy: range, f: Callable[[int], int], w: int, sleep_time: float = 0.01) -> None:
@@ -63,5 +63,5 @@ except TypeError:
     print(">> \033[1;3;31mTypeError\t[KO]\033[0m\n")
 test("12 (str)", "Hello World!", lambda x: 0, 0.1)
 test("13 (x**x + sleep(0)", range(100), lambda x: x**x, 0)
-test_w_fill_tip("14 (width: 10, fill: '>', tip: '=')", range(1000), lambda x: x, 10, '>', '=')
-test_w_fill_tip("15 (width: 10, fill: '█', tip: ' ')", range(1000), lambda x: x, 10, '█', ' ')
+test_w_fill_tip("14", range(1000), lambda x: x, 10, '>', '=')
+test_w_fill_tip("15", range(1000), lambda x: x, 10, '█', ' ')
