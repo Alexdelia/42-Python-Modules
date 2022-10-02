@@ -70,9 +70,23 @@ test("int in recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", 42)'
 test("empty recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", "")', False)
 test("invalid recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", "invalid")', False)
 test("book add recipe", 'Book("My book").add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch"))', True)
+test("book get recipe by name (do not exist)", 'Book("My book").get_recipe_by_name("My recipe")', True)
+test("book get recipes by type (no recipe)", 'Book("My book").get_recipes_by_types("lunch")', True)
+test("book get recipes by type (do not exist)", 'Book("My book").get_recipes_by_types("not")', False)
+
+print("\033[1;36m>>> multiple steps tests\033[0m")
+
+try:
+    book = Book("My book")
+    book.add_recipe(Recipe("sandwhich", 1, 4, ["bread", "ham", "cheese", "butter"], "a nice butter/ham/sandwhich", "lunch"))
+    print(str(book.get_recipe_by_name("sandwhich")))
+    print(str(book.get_recipes_by_types("lunch")))
+    handle_res("", True)
+except Exception as e:
+    handle_res(str(e), False)
 
 print(f"\n\t[ \033[1;32m{g}\033[0m|\033[1;31m{b}\033[0m / \033[1m{g+b}\033[0m ]",
-      f"\t\033[1;36m{g/(g+b)*100:.2f}%\033[0m",
+      f"\t\033[1;35m{g/(g+b)*100:.2f}%\033[0m",
       "\t\033[1m[",
       ["\033[31mKO", "\033[32mOK"][b == 0],
       "\033[0m\033[1m]")
