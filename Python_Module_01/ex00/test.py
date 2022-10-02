@@ -69,7 +69,10 @@ test("None in recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", Non
 test("int in recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", 42)', False)
 test("empty recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", "")', False)
 test("invalid recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", "invalid")', False)
-test("book add recipe", 'str(b = Book("My book"); b.add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch")); b.get_recipe_by_name("My recipe"))', True)
-test("book add and get recipe", 'b = Book("My book"); b.add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch")); b.get_recipe_by_name("My recipe")', True)
-test("book get unadd recipe", 'b = Book("My book"); b.get_recipe_by_name("My recipe")', False)
-test("test", 'book = Book("My book") and book.add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch")) and book.get_recipe_by_name("My recipe")', True)
+test("book add recipe", 'Book("My book").add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch"))', True)
+
+print(f"\n\t[ \033[1;32m{g}\033[0m|\033[1;31m{b}\033[0m / \033[1m{g+b}\033[0m ]",
+      f"\t\033[1;36m{g/(g+b)*100:.2f}%\033[0m",
+      "\t\033[1m[",
+      ["\033[31mKO", "\033[32mOK"][b == 0],
+      "\033[0m\033[1m]")
