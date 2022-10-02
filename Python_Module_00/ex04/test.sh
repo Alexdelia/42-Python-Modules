@@ -76,7 +76,8 @@ test '0 1' \
 ^[[1mQuotient:^[[0m	^[[1;35m0.0^[[0m
 ^[[1mRemainder:^[[0m	^[[1;35m0^[[0m
 '
-test '' 'usage:	^[[1moperation.py ^[[35m<number1> <number2>^[[0m\n'
+real=$(find "$(pwd)"/$e -type f)
+test '' "usage:	^[[1m$real ^[[35m<number1> <number2>^[[0m\n"
 test '12 10 5' '^[[1;31mAssertionError:^[[35m	3^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
 test '42' '^[[1;31mAssertionError:^[[35m	1^[[0m ^[[31marguments provided, expected ^[[1;35m2^[[0m\n'
 test 'one two' '^[[1;31mAssertionError:^[[35m	one^[[0m ^[[31mis not an integer^[[0m\n'
