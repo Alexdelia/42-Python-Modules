@@ -33,7 +33,6 @@ class Book:
             "lunch": [],
             "dessert": [],
         }
-    
 
     def get_recipe_by_name(self, name):
         """Print a recipe with the name `name` and return the instance"""
@@ -41,12 +40,15 @@ class Book:
             raise TypeError("name must be a string")
         if not name:
             raise ValueError("name must not be empty")
-        ret = list(filter(lambda recipe: recipe.name == name,
-            self.recipes_list["lunch"] + self.recipes_list["starter"] + self.recipes_list["dessert"]))
+        ret = list(
+            filter(
+                lambda recipe: recipe.name == name, self.recipes_list["lunch"]
+                + self.recipes_list["starter"] + self.recipes_list["dessert"]
+            )
+        )
         ret = ret[0] if ret else None
         print(ret)
         return ret
-    
 
     def get_recipes_by_types(self, recipe_type):
         """Get all recipe names for a given recipe_type """
@@ -57,7 +59,6 @@ class Book:
         if recipe_type not in ["starter", "lunch", "dessert"]:
             raise ValueError("recipe_type must be starter, lunch or dessert")
         return self.recipes_list[recipe_type]
-    
 
     def add_recipe(self, recipe):
         """Add a recipe to the book and update last_update"""

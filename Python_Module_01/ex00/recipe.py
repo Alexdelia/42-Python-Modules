@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Recipe:
     """
         Class that represents a recipe.
@@ -11,13 +12,10 @@ class Recipe:
             recipe_type: str (starter, lunch, dessert)
     """
 
-    def __init__(self,
-                 name: str,
-                 cooking_lvl: int,
-                 cooking_time: int,
-                 ingredients: list[str],
-                 description: str,
-                 recipe_type: str):
+    def __init__(
+        self, name: str, cooking_lvl: int, cooking_time: int,
+        ingredients: list[str], description: str, recipe_type: str
+    ):
         if not isinstance(name, str):
             raise TypeError("name must be a string")
         if not isinstance(cooking_lvl, int):
@@ -54,12 +52,13 @@ class Recipe:
 
     def __str__(self):
         """Return the string to print with the recipe info"""
-        return (f"Recipe {self.name}:\n"
-                + f"\tDescription:   {self.description}\n"
-                + f"\tCooking level: {self.cooking_lvl}/5\n"
-                + f"\tCooking time:  {self.cooking_time} minutes\n"
-                + f"\tIngredients:   {self.ingredients}\n"
-                + f"\tRecipe type:   {self.recipe_type}\n")
+        return (
+            f"Recipe {self.name}:\n" + f"\tDescription:   {self.description}\n"
+            + f"\tCooking level: {self.cooking_lvl}/5\n"
+            + f"\tCooking time:  {self.cooking_time} minutes\n"
+            + f"\tIngredients:   {self.ingredients}\n"
+            + f"\tRecipe type:   {self.recipe_type}\n"
+        )
 
 
 if __name__ == "__main__":
