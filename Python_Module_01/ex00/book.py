@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import datetime
-from typing import Union
 
 from recipe import Recipe
 
@@ -12,7 +11,8 @@ class Book:
             name: str
             last_update: datetime
             creation_date: datetime
-            recipes_list: dict[str, list[Recipe]] (str == "starter" or "lunch" or "dessert")
+            recipes_list: dict[str, list[Recipe]]
+                (str == "starter" or "lunch" or "dessert")
 
         Methods:
             get_recipe_by_name(name: str): Recipe

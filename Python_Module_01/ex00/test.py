@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import Any
-from xmlrpc.client import FastParser
 
 from book import Book
 from recipe import Recipe
@@ -20,9 +18,7 @@ def handle_res(out: str, success: bool):
             out: str      (output of the test)
             success: bool (if the test was successful)
     """
-    l = 80 - len(out)
-    l = [l, 0][l < 0]
-    print(f"{out}%*s" % (l, "\033[1m["), end="")
+    print(f"{out}%*s" % (max(0, 80 - len(out)), "\033[1m["), end="")
     if success:
         print("\033[32m✔\033[0m\033[1m]")
         global g
