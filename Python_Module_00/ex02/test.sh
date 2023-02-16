@@ -53,7 +53,8 @@ test 3 "I'm Odd.\n"
 test 0 "I'm Zero.\n"
 test 'Hello' '^[[1;31mAssertionError:^[[35m	Hello^[[0m ^[[31mis not an integer^[[0m\n'
 test '12 3' '^[[1;31mAssertionError:^[[35m	2^[[0m ^[[31marguments provided, expected ^[[1;35m1^[[0m\n'
-test '' 'usage:	^[[1m./whois.py ^[[35m<number>^[[0m\n'
+real=$(find "$(pwd)"/$e -type f)
+test '' "usage:	^[[1m$real ^[[35m<number>^[[0m\n"
 test '          42       ' "I'm Even.\n"
 test '0000000000000000021' "I'm Odd.\n"
 test '0,84' '^[[1;31mAssertionError:^[[35m	0,84^[[0m ^[[31mis not an integer^[[0m\n'
