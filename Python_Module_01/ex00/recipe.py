@@ -3,8 +3,24 @@
 from typing import Literal
 
 from pydantic import (
-    BaseModel, ConstrainedInt, ConstrainedStr, Field, PositiveInt
+    BaseModel, ConstrainedInt, ConstrainedStr, Field, StrictStr
 )
+
+
+class UnEmptyStr(ConstrainedStr):
+    strict = True
+    min_length = 1
+
+
+class CookingLvl(ConstrainedInt):
+    strict = True
+    ge = 1
+    le = 5
+
+
+class PositiveInt(ConstrainedInt):
+    strict = True
+    ge = 0
 
 
 class Recipe(BaseModel):
@@ -17,12 +33,11 @@ class Recipe(BaseModel):
             description: str
             recipe_type: str (starter, lunch, dessert)
     """
-    # not using constr because of flake8 error
-    name: ConstrainedStr = Field(..., min_length=1)
-    cooking_lvl: ConstrainedInt = Field(..., ge=1, le=5)
+    name: UnEmptyStr
+    cooking_lvl: CookingLvl
     cooking_time: PositiveInt
-    ingredients: list[ConstrainedStr] = Field(..., min_items=1)
-    description: ConstrainedStr
+    ingredients: list[UnEmptyStr] = Field(..., min_items=1)
+    description: StrictStr
     recipe_type: Literal["starter", "lunch", "dessert"]
 
     def __init__(

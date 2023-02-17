@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
-import datetime
+from datetime import datetime
 
-from recipe import Recipe
+from pydantic import BaseModel
+from recipe import Recipe, UnEmptyStr
 
 
-class Book:
+class RecipeList(BaseModel):
+    starter: list[Recipe]
+    lunch: list[Recipe]
+    dessert: list[Recipe]
+
+
+class Book(BaseModel):
     """
         Class that represents a book.
             name: str
@@ -20,19 +27,22 @@ class Book:
             add_recipe(recipe: Recipe)
     """
 
+    name: UnEmptyStr
+    last_update: datetime
+    creation_date: datetime
+    recipes_list: dict[str, list[Recipe]]
+
     def __init__(self, name: str):
-        if not isinstance(name, str):
-            raise TypeError("name must be a string")
-        if not name:
-            raise ValueError("name must not be empty")
-        self.name = name
-        self.last_update = datetime.datetime.now()
-        self.creation_date = datetime.datetime.now()
-        self.recipes_list: dict[str, list[Recipe]] = {
-            "starter": [],
-            "lunch": [],
-            "dessert": [],
-        }
+        super().__init__(
+            name=name,
+            last_update=datetime.now(),
+            creation_date=datetime.now(),
+            recipes_list={
+                "starter": [],
+                "lunch": [],
+                "dessert": [],
+            },
+        )
 
     def get_recipe_by_name(self, name):
         """Print a recipe with the name `name` and return the instance"""
@@ -65,7 +75,7 @@ class Book:
         if not isinstance(recipe, Recipe):
             raise TypeError("recipe must be a Recipe")
         self.recipes_list[recipe.recipe_type].append(recipe)
-        self.last_update = datetime.datetime.now()
+        self.last_update = datetime.now()
 
 
 if __name__ == "__main__":

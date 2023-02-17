@@ -96,6 +96,10 @@ test(
     False
 )
 test(
+    "empty element in recipe ingredients",
+    'Recipe("name", 1, 1, ["a", "", "b"], "desc", "lunch")', False
+)
+test(
     "None in recipe description",
     'Recipe("name", 1, 1, ["a", "b"], None, "lunch")', False
 )
