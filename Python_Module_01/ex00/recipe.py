@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from enum import StrEnum, auto
-from typing import Literal
 
-from pydantic import (BaseModel, ConstrainedInt, ConstrainedStr, Field,
-                      StrictStr)
+from pydantic import (
+    BaseModel, ConstrainedInt, ConstrainedStr, Field, StrictStr
+)
 
 
 class UnEmptyStr(ConstrainedStr):

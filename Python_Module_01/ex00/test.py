@@ -1,47 +1,91 @@
 #!/usr/bin/env python3
 
 import sys
+from typing import Any
 
+import pytest
 from book import Book
-from recipe import Recipe
+from recipe import Recipe, RecipeType
 
-if __name__ != "__main__":
-    sys.exit()
+# def handle_res(out: str, success: bool):
+#     """
+#         Print the result of a test and update global variables
+#             out: str      (output of the test)
+#             success: bool (if the test was successful)
+#     """
+#     print(f"{out}%*s" % (max(0, 80 - len(out)), "\033[1m["), end="")
+#     if success:
+#         print("\033[32m✔\033[0m\033[1m]")
+#         global g
+#         g += 1
+#     else:
+#         print("\033[31m✗\033[0m\033[1m]")
+#         global b
+#         b += 1
 
-g = 0
-b = 0
+# def test(name: str, ev: str, b_ex: bool = True) -> None:
+#     """
+#         Test:
+#             name: str         (name of the test)
+#             ev: str           (evaluated string)
+#             b_ex: bool = True (expected result)
+#     """
+#     print(f"\033[1;36m>>> {name}\033[0m")
+#     print(f"$\033[1;33m{ev}\033[0m")
+#     try:
+#         handle_res(str(eval(ev)), b_ex)
+#     except Exception as e:
+#         handle_res(str(e), not b_ex)
+
+BOOK_NAME = "My book"
+RECIPE_NAME = "My recipe"
 
 
-def handle_res(out: str, success: bool):
-    """
-        Print the result of a test and update global variables
-            out: str      (output of the test)
-            success: bool (if the test was successful)
-    """
-    print(f"{out}%*s" % (max(0, 80 - len(out)), "\033[1m["), end="")
-    if success:
-        print("\033[32m✔\033[0m\033[1m]")
-        global g
-        g += 1
-    else:
-        print("\033[31m✗\033[0m\033[1m]")
-        global b
-        b += 1
+@pytest.fixture
+def recipe_dict() -> dict[str, Any]:
+    return {
+        "name": RECIPE_NAME,
+        "cooking_lvl": 1,
+        "cooking_time": 10,
+        "ingredients": ["a", "b", "c"],
+        "description": "desc",
+        "recipe_type": "lunch",
+    }
 
 
-def test(name: str, ev: str, b_ex: bool = True) -> None:
-    """
-        Test:
-            name: str         (name of the test)
-            ev: str           (evaluated string)
-            b_ex: bool = True (expected result)
-    """
-    print(f"\033[1;36m>>> {name}\033[0m")
-    print(f"$\033[1;33m{ev}\033[0m")
-    try:
-        handle_res(str(eval(ev)), b_ex)
-    except Exception as e:
-        handle_res(str(e), not b_ex)
+def test_book_basic():
+    book = Book(BOOK_NAME)
+    assert book.name == BOOK_NAME
+    assert book.last_update == book.creation_date
+    assert book.recipes_list == {k.value: [] for k in RecipeType}
+
+
+def test_None_in_book_name():
+    with pytest.raises(ValueError):
+        eval("Book(None)")
+
+
+def test_empty_book_name():
+    with pytest.raises(ValueError):
+        Book("")
+
+
+def test_int_in_book_name():
+    with pytest.raises(TypeError):
+        eval("Book(42)")
+
+
+def test_recipe_basic(recipe_dict):
+    recipe = Recipe(**recipe_dict)
+    assert recipe.dict() == recipe_dict
+    assert str(recipe) == (
+        f"Recipe name: {recipe_dict['name']}\n"
+        f"Cooking level: {recipe_dict['cooking_lvl']}\n"
+        f"Cooking time: {recipe_dict['cooking_time']}\n"
+        f"Ingredients: {recipe_dict['ingredients']}\n"
+        f"Description: {recipe_dict['description']}\n"
+        f"Recipe type: {recipe_dict['recipe_type']}\n"
+    )
 
 
 test("book basic", 'Book("My book")', True)
