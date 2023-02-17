@@ -6,12 +6,6 @@ from pydantic import BaseModel
 from recipe import Recipe, RecipeType, UnEmptyStr
 
 
-class RecipeList(BaseModel):
-    starter: list[Recipe]
-    lunch: list[Recipe]
-    dessert: list[Recipe]
-
-
 class Book(BaseModel):
     """
         Class that represents a book.
@@ -37,7 +31,7 @@ class Book(BaseModel):
             name=name,
             last_update=datetime.now(),
             creation_date=datetime.now(),
-            recipes_list=RecipeList(starter=[], lunch=[], dessert=[])
+            recipes_list={k.value: [] for k in RecipeType},
         )
 
     def get_recipe_by_name(self, name):
