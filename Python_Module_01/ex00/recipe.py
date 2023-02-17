@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+from enum import StrEnum, auto
 from typing import Literal
 
-from pydantic import (
-    BaseModel, ConstrainedInt, ConstrainedStr, Field, StrictStr
-)
+from pydantic import (BaseModel, ConstrainedInt, ConstrainedStr, Field,
+                      StrictStr)
 
 
 class UnEmptyStr(ConstrainedStr):
@@ -23,6 +23,12 @@ class PositiveInt(ConstrainedInt):
     ge = 0
 
 
+class RecipeType(StrEnum):
+    STARTER = auto()
+    LUNCH = auto()
+    DESSERT = auto()
+
+
 class Recipe(BaseModel):
     """
         Class that represents a recipe.
@@ -38,7 +44,7 @@ class Recipe(BaseModel):
     cooking_time: PositiveInt
     ingredients: list[UnEmptyStr] = Field(..., min_items=1)
     description: StrictStr
-    recipe_type: Literal["starter", "lunch", "dessert"]
+    recipe_type: RecipeType
 
     def __init__(
         self,
