@@ -1,47 +1,14 @@
-#!/usr/bin/env python3
-
-import sys
 from typing import Any
 
 import pytest
 from book import Book
 from recipe import Recipe, RecipeType
 
-# def handle_res(out: str, success: bool):
-#     """
-#         Print the result of a test and update global variables
-#             out: str      (output of the test)
-#             success: bool (if the test was successful)
-#     """
-#     print(f"{out}%*s" % (max(0, 80 - len(out)), "\033[1m["), end="")
-#     if success:
-#         print("\033[32m✔\033[0m\033[1m]")
-#         global g
-#         g += 1
-#     else:
-#         print("\033[31m✗\033[0m\033[1m]")
-#         global b
-#         b += 1
-
-# def test(name: str, ev: str, b_ex: bool = True) -> None:
-#     """
-#         Test:
-#             name: str         (name of the test)
-#             ev: str           (evaluated string)
-#             b_ex: bool = True (expected result)
-#     """
-#     print(f"\033[1;36m>>> {name}\033[0m")
-#     print(f"$\033[1;33m{ev}\033[0m")
-#     try:
-#         handle_res(str(eval(ev)), b_ex)
-#     except Exception as e:
-#         handle_res(str(e), not b_ex)
-
 BOOK_NAME = "My book"
 RECIPE_NAME = "My recipe"
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def recipe_dict() -> dict[str, Any]:
     return {
         "name": RECIPE_NAME,
@@ -60,19 +27,15 @@ def test_book_basic():
     assert book.recipes_list == {k.value: [] for k in RecipeType}
 
 
-def test_None_in_book_name():
-    with pytest.raises(ValueError):
-        eval("Book(None)")
+def test_book_name_invalid():
+    with pytest.raises(Exception):
+        Book(None)  # type: ignore
 
-
-def test_empty_book_name():
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         Book("")
 
-
-def test_int_in_book_name():
-    with pytest.raises(TypeError):
-        eval("Book(42)")
+    with pytest.raises(Exception):
+        Book(42)  # type: ignore
 
 
 def test_recipe_basic(recipe_dict):
@@ -88,126 +51,192 @@ def test_recipe_basic(recipe_dict):
     )
 
 
-test("book basic", 'Book("My book")', True)
-test("None in book name", 'Book(None)', False)
-test("empty book name", 'Book("")', False)
-test("int in book name", 'Book(42)', False)
-test(
-    "recipe basic",
-    'Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch")', True
-)
-test(
-    "recipe basic print",
-    'str(Recipe("sandwhich", 1, 4, ["bread", "ham", "cheese", "butter"], "a nice butter/ham/sandwhich", "lunch"))',
-    True
-)
-test(
-    "None in recipe name", 'Recipe(None, 1, 1, ["a", "b"], "desc", "lunch")',
-    False
-)
-test(
-    "empty recipe name", 'Recipe("", 1, 1, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "int in recipe name", 'Recipe(42, 1, 1, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "None in recipe cooking level",
-    'Recipe("name", None, 1, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "invalid recipe cooking level",
-    'Recipe("name", 42, 1, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "None in recipe cooking time",
-    'Recipe("name", 1, None, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "invalid recipe cooking time",
-    'Recipe("name", 1, -42, ["a", "b"], "desc", "lunch")', False
-)
-test(
-    "None in recipe ingredients", 'Recipe("name", 1, 1, None, "desc", "lunch")',
-    False
-)
-test(
-    "int in recipe ingredients", 'Recipe("name", 1, 1, 42, "desc", "lunch")',
-    False
-)
-test(
-    "empty recipe ingredients", 'Recipe("name", 1, 1, [], "desc", "lunch")',
-    False
-)
-test(
-    "empty element in recipe ingredients",
-    'Recipe("name", 1, 1, ["a", "", "b"], "desc", "lunch")', False
-)
-test(
-    "None in recipe description",
-    'Recipe("name", 1, 1, ["a", "b"], None, "lunch")', False
-)
-test(
-    "int in recipe description",
-    'Recipe("name", 1, 1, ["a", "b"], 42, "lunch")', False
-)
-# empty recipe description is valid
-test(
-    "empty recipe description", 'Recipe("name", 1, 1, ["a", "b"], "", "lunch")',
-    True
-)
-test(
-    "None in recipe recipe_type",
-    'Recipe("name", 1, 1, ["a", "b"], "desc", None)', False
-)
-test(
-    "int in recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", 42)',
-    False
-)
-test(
-    "empty recipe recipe_type", 'Recipe("name", 1, 1, ["a", "b"], "desc", "")',
-    False
-)
-test(
-    "invalid recipe recipe_type",
-    'Recipe("name", 1, 1, ["a", "b"], "desc", "invalid")', False
-)
-test(
-    "book add recipe",
-    'Book("My book").add_recipe(Recipe("My recipe", 1, 10, ["a", "b", "c"], "desc", "lunch"))',
-    True
-)
-test(
-    "book get recipe by name (do not exist)",
-    'Book("My book").get_recipe_by_name("My recipe")', True
-)
-test(
-    "book get recipes by type (no recipe)",
-    'Book("My book").get_recipes_by_types("lunch")', True
-)
-test(
-    "book get recipes by type (do not exist)",
-    'Book("My book").get_recipes_by_types("not")', False
-)
+def test_recipe_name_invalid(recipe_dict):
+    recipe_dict["name"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
 
-print("\033[1;36m>>> multiple steps tests\033[0m")
+    recipe_dict["name"] = ""
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
 
-try:
-    book = Book("My book")
-    book.add_recipe(
-        Recipe(
-            "sandwhich", 1, 4, ["bread", "ham", "cheese", "butter"],
-            "a nice butter/ham/sandwhich", "lunch"
-        )
-    )
-    print(str(book.get_recipe_by_name("sandwhich")))
-    print(str(book.get_recipes_by_types("lunch")))
-    handle_res("", True)
-except Exception as e:
-    handle_res(str(e), False)
+    recipe_dict["name"] = 42
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
 
-print(
-    f"\n\t[ \033[1;32m{g}\033[0m|\033[1;31m{b}\033[0m / \033[1m{g+b}\033[0m ]",
-    f"\t\033[1;35m{g/(g+b)*100:.2f}%\033[0m", "\t\033[1m[",
-    ["\033[31mKO", "\033[32mOK"][b == 0], "\033[0m\033[1m]"
-)
+
+def test_to_be_sure(recipe_dict):
+    assert recipe_dict["name"] == RECIPE_NAME
+
+
+def test_recipe_cooking_level_invalid(recipe_dict):
+    recipe_dict["cooking_lvl"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = 42
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = -42
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = 1.5
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = "1"
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = True
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_lvl"] = 0
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+
+def test_recipe_cooking_time_invalid(recipe_dict):
+    recipe_dict["cooking_time"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_time"] = -42
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_time"] = 42.5
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_time"] = "42"
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_time"] = True
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["cooking_time"] = 0
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+
+def test_recipe_ingredients_invalid(recipe_dict):
+    recipe_dict["ingredients"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["ingredients"] = 42
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["ingredients"] = []
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["ingredients"] = ["a", "", "b"]
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+
+def test_recipe_description_invalid(recipe_dict):
+    recipe_dict["description"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["description"] = 42
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    # description is the only field that can be empty
+    recipe_dict["description"] = ""
+    Recipe(**recipe_dict)
+
+
+def test_recipe_recipe_type_invalid(recipe_dict):
+    recipe_dict["recipe_type"] = None
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["recipe_type"] = ""
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["recipe_type"] = 42
+    with pytest.raises(TypeError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["recipe_type"] = "invalid"
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+    recipe_dict["recipe_type"] = RecipeType.STARTER.value.upper()
+    with pytest.raises(ValueError):
+        Recipe(**recipe_dict)
+
+
+def test_add_recipe(recipe_dict):
+    book = Book(BOOK_NAME)
+
+    assert book.recipes_list == {k.value: [] for k in RecipeType}
+    assert book.last_update == book.creation_date
+
+    recipe = Recipe(**recipe_dict)
+
+    book.add_recipe(recipe)
+
+    for k in RecipeType:
+        if k.value == recipe.recipe_type:
+            assert book.recipes_list[k.value] == [recipe]
+        else:
+            assert book.recipes_list[k.value] == []
+
+    assert book.last_update > book.creation_date
+
+
+def test_get_recipe_by_name(recipe_dict):
+    book = Book(BOOK_NAME)
+
+    assert book.get_recipe_by_name(RECIPE_NAME) is None
+
+    recipe = Recipe(**recipe_dict)
+
+    book.add_recipe(recipe)
+
+    assert book.get_recipe_by_name(RECIPE_NAME) == recipe
+    assert book.get_recipe_by_name("invalid") is None
+
+
+def test_get_recipes_by_types(recipe_dict):
+    book = Book(BOOK_NAME)
+
+    assert book.get_recipes_by_types(RecipeType.STARTER.value) == []
+
+    recipe_dict["recipe_type"] = RecipeType.STARTER.value
+    recipe = Recipe(**recipe_dict)
+
+    book.add_recipe(recipe)
+
+    assert book.get_recipes_by_types(RecipeType.STARTER.value) == [recipe]
+    assert book.get_recipes_by_types(RecipeType.LUNCH.value) == []
+    assert book.get_recipes_by_types(RecipeType.DESSERT.value) == []
+
+
+def test_get_recipes_by_types_invalid(recipe_dict):
+    book = Book(BOOK_NAME)
+
+    with pytest.raises(TypeError):
+        book.get_recipes_by_types(42)
+
+    with pytest.raises(ValueError):
+        book.get_recipes_by_types("")
+
+    with pytest.raises(TypeError):
+        book.get_recipes_by_types(None)
+
+    with pytest.raises(ValueError):
+        book.get_recipes_by_types("invalid")

@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-from enum import StrEnum, auto
+from enum import Enum
 
 from pydantic import (
     BaseModel, ConstrainedInt, ConstrainedStr, Field, StrictStr
@@ -23,10 +21,10 @@ class PositiveInt(ConstrainedInt):
     ge = 0
 
 
-class RecipeType(StrEnum):
-    STARTER = auto()
-    LUNCH = auto()
-    DESSERT = auto()
+class RecipeType(str, Enum):
+    STARTER = "starter"
+    LUNCH = "lunch"
+    DESSERT = "dessert"
 
 
 class Recipe(BaseModel):

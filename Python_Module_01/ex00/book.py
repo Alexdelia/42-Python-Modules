@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -27,10 +25,11 @@ class Book(BaseModel):
     recipes_list: dict[str, list[Recipe]]
 
     def __init__(self, name: str):
+        now = datetime.now()
         super().__init__(
             name=name,
-            last_update=datetime.now(),
-            creation_date=datetime.now(),
+            last_update=now,
+            creation_date=now,
             recipes_list={k.value: [] for k in RecipeType},
         )
 
