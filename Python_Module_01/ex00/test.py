@@ -7,6 +7,9 @@ from recipe import Recipe, RecipeType
 BOOK_NAME = "My book"
 RECIPE_NAME = "My recipe"
 
+if __name__ == "__main__":
+    pytest.main(args=["-v", __file__])
+
 
 @pytest.fixture(scope="function")
 def recipe_dict() -> dict[str, Any]:
