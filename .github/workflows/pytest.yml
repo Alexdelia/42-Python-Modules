@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
-          if [ -f Python_Module_{{ $matrix.module }}/requirements.txt ]; then pip install -r Python_Module_{{ $matrix.module }}/requirements.txt; fi
+          if [ -f Python_Module_${{ matrix.module }}/requirements.txt ]; then pip install -r Python_Module_${{ matrix.module }}/requirements.txt; fi
 
       - name: pytest
         run: |
