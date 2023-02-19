@@ -64,13 +64,14 @@ class Recipe(BaseModel):
 
     def __str__(self):
         """Return the string to print with the recipe info"""
-        return (
-            f"Recipe {self.name}:\n" + f"\tDescription:   {self.description}\n"
-            + f"\tCooking level: {self.cooking_lvl}/5\n"
-            + f"\tCooking time:  {self.cooking_time} minutes\n"
-            + f"\tIngredients:   {self.ingredients}\n"
-            + f"\tRecipe type:   {self.recipe_type}\n"
-        )
+        return f"""\
+Recipe {self.name}:
+\tDescription:   {self.description}
+\tCooking level: {self.cooking_lvl}/5
+\tCooking time:  {self.cooking_time} minutes
+\tIngredients:   {str(self.ingredients)[1:1]}
+\tRecipe type:   {self.recipe_type.value}
+"""
 
 
 if __name__ == "__main__":
