@@ -18,23 +18,23 @@ def generator(
         yield "ERROR"
         return
 
-    l = text.split(sep)
+    ws = text.split(sep)
 
     match option:
         case "shuffle":
-            l = sorted(l, key=lambda x: random.random())
+            ws = sorted(ws, key=lambda x: random.random())
         case "unique":
             seen = set()
-            l = [x for x in l if x not in seen and not seen.add(x)]
+            ws = [x for x in ws if x not in seen and not seen.add(x)]
         case "ordered":
-            l = sorted(l)
+            ws = sorted(ws)
         case None:
             pass
         case _:
             yield "ERROR"
             return
 
-    for word in l:
+    for word in ws:
         yield word
 
 
