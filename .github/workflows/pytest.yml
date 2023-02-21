@@ -34,4 +34,6 @@ jobs:
 
       - name: pytest
         run: |
-          pytest Python_Module_${{ matrix.subject.module }}/ex_${{ matrix.subject.exercise }}/test.py
+          for ex in ${{ matrix.subject.exercise }}; do
+            pytest Python_Module_${{ matrix.subject.module }}/ex_$ex/test.py
+          done
