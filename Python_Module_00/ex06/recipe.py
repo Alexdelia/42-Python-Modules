@@ -87,9 +87,23 @@ def print_menu():
     print("\t5: Quit")
 
 
+def _print_recipe():
+    i = input("Recipe name:\n>> ")
+    print()
+    print_recipe(i)
+
+
 if __name__ == "__main__":
     print("Welcome to the Python Cookbook !")
     print_menu()
+
+    action = {
+        1: add_recipe_interactive,
+        2: lambda: delete_recipe(input("Recipe name:\n>> ")),
+        3: _print_recipe,
+        4: print_cookbook,
+        5: lambda: print("Cookbook closed. Goodbye !")
+    }
 
     o = 0
     while o != 5:
@@ -99,19 +113,12 @@ if __name__ == "__main__":
             print("\nSorry, this option does not exist.")
             print_menu()
             continue
+
         print()
-        if o == 1:
-            add_recipe_interactive()
-        elif o == 2:
-            delete_recipe(input("Recipe name:\n>> "))
-        elif o == 3:
-            i = input("Recipe name:\n>> ")
-            print()
-            print_recipe(i)
-        elif o == 4:
-            print_cookbook()
-        elif o == 5:
-            print("Cookbook closed. Goodbye !")
-        else:
+
+        if o not in action:
             print("Sorry, this option does not exist.")
             print_menu()
+            continue
+
+        action[o]()
