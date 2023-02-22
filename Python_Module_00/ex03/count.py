@@ -12,7 +12,9 @@ def text_analyzer(text: str = ""):
 
     if type(text) != str:
         print(
-            f"\033[1;31mAssertionError:\033[35m\t{text}\033[0m \033[31mis not a string\033[0m")
+            f"\033[1;31mAssertionError:\033[35m\t{text}\033[0m",
+            "\033[31mis not a string\033[0m"
+        )
         return
 
     if text == "":
@@ -27,7 +29,9 @@ def text_analyzer(text: str = ""):
 if __name__ == "__main__":
     if len(sys.argv) > 2:
         print(
-            f"\033[1;31mAssertionError:\033[35m\t{len(sys.argv) - 1}\033[0m \033[31marguments provided, expected \033[1;35m1\033[0m")
+            f"\033[1;31mAssertionError:\033[35m\t{len(sys.argv) - 1}\033[0m",
+            "\033[31marguments provided, expected \033[1;35m1\033[0m"
+        )
         sys.exit()
     elif len(sys.argv) == 2:
         text_analyzer(sys.argv[1])
