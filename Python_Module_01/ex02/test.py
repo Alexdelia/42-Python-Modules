@@ -306,38 +306,129 @@ def test_vector_sub_invalid(values_column, values_row):
 def test_vector_mul(values_column, values_row, shape_column, shape_row):
     v1 = Vector(values_column)
     v2 = v1 * 5
-    assert v2.values == [[0.0], [5.0], [10.0], [15.0]]
+    RES_COL = [[0.0], [5.0], [10.0], [15.0]]
+    assert v2.values == RES_COL
     assert v2.shape == shape_column
 
     v1 = Vector(values_row)
     v2 = v1 * 5
-    assert v2.values == [[0.0, 5.0, 10.0, 15.0]]
+    RES_ROW = [[0.0, 5.0, 10.0, 15.0]]
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
 
-
-def test_vector_mul_invalid(values_column, values_row):
     v1 = Vector(values_column)
-    v2 = Vector([[2.0], [1.5], [2.25], [4.0]])
-
-    with pytest.raises(ValueError):
-        _ = v1 * v2.T()
-
-    with pytest.raises(ValueError):
-        _ = v1.T() * v2
+    v2 = 5 * v1
+    assert v2.values == RES_COL
+    assert v2.shape == shape_column
 
     v1 = Vector(values_row)
-    v2 = Vector([[2.0, 1.5, 2.25, 4.0]])
+    v2 = 5 * v1
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
 
-    with pytest.raises(ValueError):
-        _ = v1 * v2.T()
+    v1 = Vector(values_column)
+    v2 = v1 * 5.0
+    assert v2.values == RES_COL
+    assert v2.shape == shape_column
 
-    with pytest.raises(ValueError):
-        _ = v1.T() * v2
+    v1 = Vector(values_row)
+    v2 = v1 * 5.0
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
 
-    with pytest.raises(TypeError):
-        v1 * 1.0  # type: ignore
+    v1 = Vector(values_column)
+    v2 = 5.0 * v1
+    assert v2.values == RES_COL
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = 5.0 * v1
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
+
+    v1 = Vector(values_column)
+    v2 = v1 * -5
+    assert v2.values == [[-v[0]] for v in RES_COL]
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = v1 * -5
+    assert v2.values == [[-v for v in RES_ROW[0]]]
+    assert v2.shape == shape_row
+
+    v1 = Vector(values_column)
+    v2 = v1 * 0
+    assert v2.values == [[0.0] for _ in range(len(RES_COL))]
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = v1 * 0
+    assert v2.values == [[0.0 for _ in range(len(RES_ROW[0]))]]
+    assert v2.shape == shape_row
+
+
+def test_vector_mul_invalid(values_column):
+    v1 = Vector(values_column)
+    v2 = Vector([[2.0], [1.5], [2.25], [4.0]])
+    assert v1.shape == v2.shape
 
     with pytest.raises(TypeError):
         v1 * "1"  # type: ignore
 
     with pytest.raises(TypeError):
-        v1 * 1  # type: ignore
+        v1 * [1]  # type: ignore
+
+    with pytest.raises(TypeError):
+        v1 * v2  # type: ignore
+
+
+def test_vector_div(values_column, values_row, shape_column, shape_row):
+    v1 = Vector(values_column)
+    v2 = v1 / 2
+    RES_COL = [[0.0], [0.5], [1.0], [1.5]]
+    assert v2.values == RES_COL
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = v1 / 2
+    RES_ROW = [[0.0, 0.5, 1.0, 1.5]]
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
+
+    v1 = Vector(values_column)
+    v2 = v1 / 2.0
+    assert v2.values == RES_COL
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = v1 / 2.0
+    assert v2.values == RES_ROW
+    assert v2.shape == shape_row
+
+    v1 = Vector(values_column)
+    v2 = v1 / -2.0
+    assert v2.values == [[-v[0]] for v in RES_COL]
+    assert v2.shape == shape_column
+
+    v1 = Vector(values_row)
+    v2 = v1 / -2.0
+    assert v2.values == [[-v for v in RES_ROW[0]]]
+    assert v2.shape == shape_row
+
+
+def test_vector_div_invalid(values_column, values_row):
+    v1 = Vector(values_column)
+    with pytest.raises(ZeroDivisionError):
+        _ = v1 / 0.0
+
+    v1 = Vector(values_row)
+    with pytest.raises(ZeroDivisionError):
+        _ = v1 / 0.0
+
+    v1 = Vector(values_column)
+    with pytest.raises(NotImplementedError):
+        _ = 2.0 / v1
+
+    v1 = Vector(values_row)
+    with pytest.raises(NotImplementedError):
+        _ = 2.0 / v1
