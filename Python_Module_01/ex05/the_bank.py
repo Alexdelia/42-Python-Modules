@@ -93,12 +93,7 @@ class Bank(object):
         account = self._fix_id(account)
         account = Bank._fix_value(account)
         account = Bank._fix_b(account)
-
-        # cannot create a zip or addr attribute without any additional info
-        if not any(attr.startswith("zip") or attr.startswith("addr")
-                   for attr in account.__dict__):
-            return False
-
+        account = Bank._fix_zip_addr(account)
         account = Bank._fix_even(account)
 
         return True

@@ -83,6 +83,72 @@ def test_bank_add_basic(account_args):
     assert bank.transfer(a.name, a.name, 0.0)
 
 
+def test_bank_add_invalid(account_args):
+    bank = Bank()
+
+    for a in (
+            "invalid",
+            42,
+            None,
+    ):
+        assert not bank.add(a), f"add({a}) should return False"  # type: ignore
+
+
+def test_bank_transfer_basic(account_args):
+    bank = Bank()
+    BOB_VALUE = 1000.0
+    bob = Account(
+        "Bob",
+        zip="123-456",
+        value=BOB_VALUE,
+        ref="42",
+    )
+    assert bank.add(bob)
+    assert bank.accounts[0].value == BOB_VALUE
+
+    A_VALUE = account_args["value"]
+    a = Account(**account_args)
+    assert bank.add(a)
+    assert bank.accounts[1].value == A_VALUE
+
+    for src, dst, amount, src_new_value, dst_new_value, success in (
+        (a.name, a.name, 42.0, A_VALUE, A_VALUE, True),
+        (a.name, bob.name, 42.0, BOB_VALUE + 42.0, A_VALUE - 42.0, True),
+        (bob.name, a.name, 42, BOB_VALUE, A_VALUE, True),
+        (bob.name, a.name, BOB_VALUE * 2, BOB_VALUE, A_VALUE, False),
+        (bob.name, a.name, -42.0, BOB_VALUE, A_VALUE, False),
+        (bob.name, a.name, 0.0, BOB_VALUE, A_VALUE, True),
+        (bob.name, a.name, BOB_VALUE, 0.0, A_VALUE, True),
+    ):
+        assert bank.transfer(src, dst, amount) == success, \
+            f"transfer({src}, {dst}, {amount}) should return {success}"
+        src_i = 0 if src == a.name else 1
+        dst_i = 1 if dst == bob.name else 0
+        assert bank.accounts[src_i].value == src_new_value, \
+            f"transfer({src}, {dst}, {amount})\
+ should change {src} value to {src_new_value}"
+        assert bank.accounts[dst_i].value == dst_new_value, \
+            f"transfer({src}, {dst}, {amount})\
+ should change {dst} value to {dst_new_value}"
+
+
+def test_bank_transfer_invalid(account_args):
+    bank = Bank()
+    bob = Account(
+        "Bob",
+        zip="123-456",
+        value=1000.0,
+        ref="42",
+    )
+    assert bank.add(bob)
+
+    for k, v in (
+        ("name", 42),
+        ("value", -42),
+    ):
+        pass
+
+
 # def test_bank_add_invalid(account_args):
 #     bank = Bank()
 
