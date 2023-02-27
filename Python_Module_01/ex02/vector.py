@@ -234,13 +234,11 @@ def _is_type(
     r: bool = True,
     op: Optional[str] = None,
 ) -> bool:
-    if not isinstance(t, tuple):
-        t = (t,)
-    assert len(t) > 0, "t must have at least one type"
+    if isinstance(t, tuple):
+        assert len(t) > 0, "tuple must have at least one type"
 
-    for i in t:
-        if isinstance(v, i):
-            return True
+    if isinstance(v, t):
+        return True
 
     if r:
         if op:

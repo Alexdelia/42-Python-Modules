@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
 def test_subject_1():
     bank = Bank()
-    bank.add(
+    assert bank.add(
         Account(
             'Smith Jane',
             zip='911-745',
@@ -17,7 +17,7 @@ def test_subject_1():
             bref='1044618427ff2782f0bbece0abd05f31'
         )
     )
-    bank.add(
+    assert bank.add(
         Account(
             'William John',
             zip='100-064',
@@ -33,7 +33,7 @@ def test_subject_1():
 
 def test_subject_2():
     bank = Bank()
-    bank.add(
+    assert bank.add(
         Account(
             'Smith Jane',
             zip='911-745',
@@ -41,7 +41,7 @@ def test_subject_2():
             ref='1044618427ff2782f0bbece0abd05f31'
         )
     )
-    bank.add(
+    assert bank.add(
         Account(
             'William John',
             zip='100-064',
@@ -51,10 +51,12 @@ def test_subject_2():
         )
     )
 
+    print([a.name for a in bank.accounts])
+
     assert bank.transfer('William John', 'Smith Jane', 1000.0) is False
 
-    bank.fix_account('William John')
-    bank.fix_account('Smith Jane')
+    assert bank.fix_account('William John')
+    assert bank.fix_account('Smith Jane')
 
     assert bank.transfer('William John', 'Smith Jane', 1000.0) is True
 
@@ -77,8 +79,8 @@ def test_bank_add_basic(account_args):
     a = Account(**account_args)
 
     assert bank.add(a)
-
     assert not bank.add(a)
+    assert bank.transfer(a.name, a.name, 0.0)
 
 
 # def test_bank_add_invalid(account_args):

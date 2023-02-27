@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+
 # subject code
 class Account(object):
 
@@ -36,8 +39,7 @@ class Bank(object):
         # it can be appended to the attribute accounts
 
         if not isinstance(new_account, Account) \
-                or self._get_account(new_account.name) is not None \
-                or Bank._is_corrupted(new_account):
+                or self._get_account(new_account.name) is not None:
             return False
 
         self.accounts.append(new_account)
@@ -63,10 +65,9 @@ class Bank(object):
         if src == dst:
             return True
 
-        if amount < 0:
-            return False
-
-        if src.value < amount:
+        if Bank._is_corrupted(src) or Bank._is_corrupted(dst) \
+                or amount < 0 \
+                or src.value < amount:
             return False
 
         src.transfer(-amount)
@@ -109,8 +110,10 @@ class Bank(object):
             @account:   Account() account to fix
             @return     Account() fixed account
         """
-        if not isinstance(account.name, str):
-            account.name = name
+        if "name" not in account.__dict__ or \
+                not isinstance(account.__dict__["name"], str):
+            account.__dict__["name"] = name
+
         return account
 
     def _fix_id(self, account: Account) -> Account:
@@ -146,6 +149,20 @@ class Bank(object):
         """
         for b in (attr for attr in account.__dict__ if attr.startswith("b")):
             del account.__dict__[b]
+
+        return account
+
+    @staticmethod
+    def _fix_zip_addr(account: Account) -> Account:
+        """ Fix the zip and addr attributes of an account
+            @account:   Account() account to fix
+            @return     Account() fixed account
+        """
+        if any(attr.startswith("zip") or attr.startswith("addr")
+               for attr in account.__dict__):
+            return account
+
+        account.__dict__["addr"] = uuid4().hex
 
         return account
 
@@ -191,14 +208,12 @@ class Bank(object):
 
         # attribute name, id, value
         for a, t in (
-            ("name", (str,)),
-            ("id", (int,)),
+            ("name", str),
+            ("id", int),
             ("value", (int, float)),
         ):
-            if a not in account.__dict__ \
-                    or not any(
-                        isinstance(account.__dict__[a], st) for st in t
-                    ):
+            if a not in account.__dict__ or \
+                    not isinstance(account.__dict__[a], t):
                 return True
 
         return False
