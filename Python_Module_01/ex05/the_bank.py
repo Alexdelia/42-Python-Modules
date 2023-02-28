@@ -80,14 +80,17 @@ class Bank(object):
             @name:      str(name) of the account
             @return     True if success, False if an error occured
         """
-        if not isinstance(name, str):
-            return False
-
         if (account := self._get_account(name)) is None:
             return False
 
         if not Bank._is_corrupted(account):
             return True
+
+        if not isinstance(name, str):
+            try:
+                account.__dict__["name"] = str(name)
+            except Exception:
+                return False
 
         account = Bank._fix_name(name, account)
         account = self._fix_id(account)
@@ -120,7 +123,9 @@ class Bank(object):
             if not isinstance(account.__dict__["id"], int):
                 account.__dict__["id"] = int(account.__dict__["id"])
         except Exception:  # if id is not in account.__dict__ or int() fails
-            account.id = max(account.id for account in self.accounts) + 1
+            account.__dict__["id"] = max(
+                account.id for account in self.accounts
+            ) + 1
 
         return account
 
@@ -132,7 +137,7 @@ class Bank(object):
         """
         if "value" not in account.__dict__ or \
                 not isinstance(account.__dict__["value"], (int, float)):
-            account.__dict__["value"] = 0
+            account.__dict__["value"] = 0.0
 
         return account
 
@@ -142,7 +147,7 @@ class Bank(object):
             @account:   Account() account to fix
             @return     Account() fixed account
         """
-        for b in (attr for attr in account.__dict__ if attr.startswith("b")):
+        for b in [attr for attr in account.__dict__ if attr.startswith("b")]:
             del account.__dict__[b]
 
         return account

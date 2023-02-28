@@ -3,6 +3,41 @@
 import pytest
 from the_bank import Account, Bank
 
+if hasattr(Bank, "_is_corrupted"):
+    is_corrupted = Bank._is_corrupted
+else:
+
+    def is_corrupted(account: Account) -> bool:
+        """ Check if an account is corrupted
+            @account:   Account() account to check
+            @return     True if corrupted, False if not
+        """
+        # even number of attributes
+        if len(account.__dict__) % 2 == 0:
+            return True
+
+        # attribute starting with b
+        if any(attr.startswith("b") for attr in account.__dict__):
+            return True
+
+        # no attribute starting with zip or addr
+        if not any(attr.startswith("zip") or attr.startswith("addr")
+                   for attr in account.__dict__):
+            return True
+
+        # attribute name, id, value
+        for a, t in (
+            ("name", str),
+            ("id", int),
+            ("value", (int, float)),
+        ):
+            if a not in account.__dict__ or \
+                    not isinstance(account.__dict__[a], t):
+                return True
+
+        return False
+
+
 if __name__ == "__main__":
     pytest.main(args=["-v", __file__])
 
@@ -77,10 +112,11 @@ def account_args():
 def test_bank_add_basic(account_args):
     bank = Bank()
     a = Account(**account_args)
+    assert not is_corrupted(a)
 
     assert bank.add(a)
     assert not bank.add(a)
-    assert bank.transfer(a.name, a.name, 0.0)
+    assert bank.transfer(a.name, a.name, 42.0)
 
 
 def test_bank_add_invalid(account_args):
@@ -103,104 +139,175 @@ def test_bank_transfer_basic(account_args):
         value=BOB_VALUE,
         ref="42",
     )
+    assert not is_corrupted(bob)
     assert bank.add(bob)
     assert bank.accounts[0].value == BOB_VALUE
 
     A_VALUE = account_args["value"]
     a = Account(**account_args)
+    assert not is_corrupted(a)
     assert bank.add(a)
     assert bank.accounts[1].value == A_VALUE
 
-    for src, dst, amount, src_new_value, dst_new_value, success in (
-        (a.name, a.name, 42.0, A_VALUE, A_VALUE, True),
-        (a.name, bob.name, 42.0, BOB_VALUE + 42.0, A_VALUE - 42.0, True),
-        (bob.name, a.name, 42, BOB_VALUE, A_VALUE, True),
-        (bob.name, a.name, BOB_VALUE * 2, BOB_VALUE, A_VALUE, False),
-        (bob.name, a.name, -42.0, BOB_VALUE, A_VALUE, False),
-        (bob.name, a.name, 0.0, BOB_VALUE, A_VALUE, True),
-        (bob.name, a.name, BOB_VALUE, 0.0, A_VALUE, True),
+    for src, dst, amount, values, success in (
+        (
+            a.name,
+            a.name,
+            42.0,
+            ((1, A_VALUE), (0, BOB_VALUE)),
+            True,
+        ),
+        (
+            a.name,
+            bob.name,
+            42.0,
+            ((1, A_VALUE - 42.0), (0, BOB_VALUE + 42.0)),
+            True,
+        ),
+        (
+            bob.name,
+            a.name,
+            42,
+            ((1, A_VALUE), (0, BOB_VALUE)),
+            True,
+        ),
+        (
+            bob.name,
+            a.name,
+            BOB_VALUE * 2,
+            ((1, A_VALUE), (0, BOB_VALUE)),
+            False,
+        ),
+        (
+            bob.name,
+            a.name,
+            -42.0,
+            ((1, A_VALUE), (0, BOB_VALUE)),
+            False,
+        ),
+        (
+            bob.name,
+            a.name,
+            0.0,
+            ((1, A_VALUE), (0, BOB_VALUE)),
+            True,
+        ),
+        (
+            bob.name,
+            a.name,
+            BOB_VALUE,
+            ((1, A_VALUE + BOB_VALUE), (0, 0.0)),
+            True,
+        ),
     ):
         assert bank.transfer(src, dst, amount) == success, \
             f"transfer({src}, {dst}, {amount}) should return {success}"
-        src_i = 0 if src == a.name else 1
-        dst_i = 1 if dst == bob.name else 0
-        assert bank.accounts[src_i].value == src_new_value, \
-            f"transfer({src}, {dst}, {amount})\
- should change {src} value to {src_new_value}"
-        assert bank.accounts[dst_i].value == dst_new_value, \
-            f"transfer({src}, {dst}, {amount})\
- should change {dst} value to {dst_new_value}"
+
+        for i, v in values:
+            assert bank.accounts[i].value == v, \
+                f"after transfer({src}, {dst}, {amount}), " \
+                f"account {i} should have value {v}"
 
 
-def test_bank_transfer_invalid(account_args):
+def _seen_corrupted(account: Account) -> bool:
     bank = Bank()
-    bob = Account(
-        "Bob",
+    assert bank.add(account)
+    if hasattr(account, "value"):
+        assert bank.accounts[0].value == account.value
+
+    dummy = Account(
+        name="dummy",
         zip="123-456",
-        value=1000.0,
+        value=42.0,
         ref="42",
     )
-    assert bank.add(bob)
+    assert not is_corrupted(dummy)
+    assert bank.add(dummy)
+    assert bank.accounts[1].value == 42.0
 
-    for k, v in (
-        ("name", 42),
-        ("value", -42),
-    ):
-        pass
+    return not bank.transfer(dummy.name, account.name, 42.0)
 
 
-# def test_bank_add_invalid(account_args):
-#     bank = Bank()
+@pytest.mark.parametrize(
+    "corrupt",
+    (
+        {
+            "name": "corrupted",
+            "zip": "123-456",
+            "value": 42.0,
+            "ref": "42",
+            "uneven": "corrupted",
+        },
+        {
+            "name": "corrupted",
+            "zip": "123-456",
+            "value": 42.0,
+            "bref": "42",
+        },
+        {
+            "name": "corrupted",
+            "no_zip": "123-456",
+            "value": 42.0,
+            "ref": "42",
+        },
+        {
+            "name": "corrupted",
+            "no_addr": "123-456",
+            "value": 42.0,
+            "ref": "42",
+        },
+    ),
+    ids=(
+        "uneven",
+        "b",
+        "no zip",
+        "no addr",
+    ),
+)
+def test_bank_corupted(corrupt):
+    bank = Bank()
 
-# def test_evaluator_basic(words, coefs):
-#     assert Evaluator.zip_evaluate(coefs, words) == 32.0
+    c = Account(**corrupt)
+    assert is_corrupted(c)
+    assert _seen_corrupted(c)
 
-#     assert Evaluator.enumerate_evaluate(coefs, words) == 32.0
+    assert bank.add(c)
+    assert bank.fix_account(c.name)
+    assert not is_corrupted(c)
+    assert not _seen_corrupted(c)
 
-# def test_evaluator_empty():
-#     words = []
-#     coefs = []
 
-#     assert Evaluator.zip_evaluate(coefs, words) == 0.0
+@pytest.mark.parametrize(
+    ("key", "value", "expected"),
+    (
+        ("name", 42, "42"),
+        ("value", "42000", (0, 0.0)),
+        ("id", "42", None),
+    ),
+    ids=(
+        "name int",
+        "value str",
+        "id str",
+    ),
+)
+def test_bank_advanced_corupted(account_args, key, value, expected):
+    bank = Bank()
 
-#     assert Evaluator.enumerate_evaluate(coefs, words) == 0.0
+    c = Account(**account_args)
+    assert not is_corrupted(c)
+    assert not _seen_corrupted(c)
 
-# def test_evaluator_int(words, coefs):
-#     coefs = [int(c) for c in coefs]
+    c.__dict__[key] = value
+    assert is_corrupted(c)
+    assert _seen_corrupted(c)
 
-#     assert Evaluator.zip_evaluate(coefs, words) == 29
+    assert bank.add(c)
+    assert bank.fix_account(c.name)
+    assert not is_corrupted(c)
+    assert not _seen_corrupted(c)
 
-#     assert Evaluator.enumerate_evaluate(coefs, words) == 29
-
-# def test_evaluator_negative(words, coefs):
-#     coefs = [-c for c in coefs]
-
-#     assert Evaluator.zip_evaluate(coefs, words) == -32.0
-
-#     assert Evaluator.enumerate_evaluate(coefs, words) == -32.0
-
-# def test_evaluator_invalid_type():
-#     with pytest.raises(TypeError):
-#         Evaluator.zip_evaluate([42.0], [42.0])  # type: ignore
-
-#     with pytest.raises(TypeError):
-#         Evaluator.enumerate_evaluate([42.0], [42.0])  # type: ignore
-
-#     with pytest.raises(TypeError):
-#         Evaluator.zip_evaluate(["42"], ["42"])  # type: ignore
-
-#     with pytest.raises(TypeError):
-#         Evaluator.enumerate_evaluate(["42"], ["42"])  # type: ignore
-
-# def test_evaluator_invalid_len(words, coefs):
-#     coefs = coefs[:-1]
-
-#     assert Evaluator.zip_evaluate(coefs, words) == -1
-
-#     assert Evaluator.enumerate_evaluate(coefs, words) == -1
-
-#     coefs += [1.0, 1.0]
-
-#     assert Evaluator.zip_evaluate(coefs, words) == -1
-
-#     assert Evaluator.enumerate_evaluate(coefs, words) == -1
+    if expected is not None:
+        if isinstance(expected, tuple):
+            assert any(bank.accounts[key].value == v for v in expected)
+        else:
+            assert c.__dict__[key] == expected
