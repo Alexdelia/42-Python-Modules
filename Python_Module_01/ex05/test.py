@@ -225,7 +225,9 @@ def _seen_corrupted(account: Account) -> bool:
     assert bank.add(dummy)
     assert bank.accounts[1].value == 42.0
 
-    return not bank.transfer(dummy.name, account.name, 42.0)
+    r = not bank.transfer(dummy.name, account.name, 42.0)
+    assert not bank.transfer(account.name, dummy.name, 42.0) == r
+    return r
 
 
 @pytest.mark.parametrize(
@@ -281,7 +283,7 @@ def test_bank_corupted(corrupt):
     ("key", "value", "expected"),
     (
         ("name", 42, "42"),
-        ("value", "42000", (0, 0.0)),
+        ("value", "81000", (0, 0.0)),
         ("id", "42", None),
     ),
     ids=(
@@ -308,6 +310,6 @@ def test_bank_advanced_corupted(account_args, key, value, expected):
 
     if expected is not None:
         if isinstance(expected, tuple):
-            assert any(bank.accounts[key].value == v for v in expected)
+            assert any(c.__dict__[key] == v for v in expected)
         else:
             assert c.__dict__[key] == expected
