@@ -13,16 +13,12 @@ else:
             @return     True if corrupted, False if not
         """
         # even number of attributes
-        if len(account.__dict__) % 2 == 0:
-            return True
-
         # attribute starting with b
-        if any(attr.startswith("b") for attr in account.__dict__):
-            return True
-
         # no attribute starting with zip or addr
-        if not any(attr.startswith("zip") or attr.startswith("addr")
-                   for attr in account.__dict__):
+        if (len(account.__dict__) % 2 == 0
+                or any(attr.startswith("b") for attr in account.__dict__)
+                or not any(attr.startswith("zip") or attr.startswith("addr")
+                           for attr in account.__dict__)):
             return True
 
         # attribute name, id, value
